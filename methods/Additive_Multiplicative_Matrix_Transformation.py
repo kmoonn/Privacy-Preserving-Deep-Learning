@@ -87,4 +87,4 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         plt.imshow(transfer_image, cmap='gray')
-        plt.savefig(r'transformed datasets/{}_{}_{}.png'.format(i, method.method_label, label))
+        plt.savefig(r'transformed datasets/mnist_{}_{}_{}.png'.format(i, method.method_label, label))
