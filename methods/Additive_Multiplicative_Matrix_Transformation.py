@@ -7,6 +7,7 @@ import random
 import numpy as np
 from matplotlib import pyplot as plt
 
+from datasets.cifar10 import CIFAR10
 from datasets.mnist import MNIST
 
 
@@ -21,8 +22,8 @@ class Additive_Multiplicative_Matrix_Transform:
 
         self.MAX_V_ADD, self.MAX_V_MUL = max_v_add, max_v_mul
         self.RISE_V = rise_v
-        self.R_add = np.random.randint(1, self.MAX_V_ADD, size=(self.width, self.height))
-        self.R_mul = np.random.randint(1, self.MAX_V_MUL, size=(self.width, self.height))
+        self.R_add = np.random.randint(1, self.MAX_V_ADD, size=self.image.shape)
+        self.R_mul = np.random.randint(1, self.MAX_V_MUL, size=self.image.shape)
 
     def MAT(self):
         return (self.image + self.R_add) / (255 * (1 + self.MAX_V_ADD / 256))
@@ -77,8 +78,10 @@ class Additive_Multiplicative_Matrix_Transform:
 
 if __name__ == '__main__':
     mnist = MNIST()
+    cifar10 = CIFAR10()
+    dataset = 'cifar10'
     for i in range(10):
-        image, label = mnist.dataset[i]
+        image, label = cifar10.dataset[i]
         method = Additive_Multiplicative_Matrix_Transform(
             image=image,
             rise_v=random.choice([100, 200, 300, 400]),
@@ -87,4 +90,4 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         plt.imshow(transfer_image, cmap='gray')
-        plt.savefig(r'transformed datasets/mnist_{}_{}_{}.png'.format(i, method.method_label, label))
+        plt.savefig(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label))
