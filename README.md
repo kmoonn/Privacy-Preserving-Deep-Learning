@@ -191,21 +191,96 @@ Data Augmentation in Client or Cloud Server?
 
 ### Abstract
 
+propose sharing pixelized images with rigorous privacy guarantees
+
+extend the standard differential privacy notion to image data, propose the m-neighborhood notion
+
+pixelization-based method with grid cells of b×b pixels
+
+quantifiable privacy model
+
 ### Methods
+
+- Differential privacy
+
+differentially private pixelization
+
+**Pixelization** can be achieved by superposing a rectangular grid over the original image and averaging the color values of the pixels within each grid cell
+
+In the paper, focus on grayscale images ,other considering each channel separately
+
+assume the sensitivity of each image is independent of other images to sanitize.
+
+The pixelization technique renders the source image using larger blocks.
+
+partitioning the image using a two-dimensional grid and the average pixel value is released for each grid cell
+
+“**square**” grid: each grid cell contains **b×b** pixels
+
+<img src="https://image.kmoon.fun//images/202408051453424.png" alt="image-20240805145323267" style="zoom:80%;" />
+
+- Standard Differential Privacy.
+
+<img src="https://image.kmoon.fun//images/202408051456069.png" alt="image-20240805145630004" style="zoom: 80%;" />
+
+**Laplace mechanism**: adding noise N to a function f, N is drawn from a Laplace distribution
+
+<img src="https://image.kmoon.fun//images/202408051502737.png" alt="image-20240805150204673" style="zoom:80%;" />
+
+- **neighboring images**
+
+![image-20240805150355111](https://image.kmoon.fun//images/202408051503164.png)
+
+m value in order to customize the level of privacy protection
+
+A straight-forward application of differential privacy is to apply Laplace perturbation to each pixel.
+
+![image-20240805152419558](https://image.kmoon.fun//images/202408051524626.png)
+
+![image-20240805152619094](https://image.kmoon.fun//images/202408051526168.png)
+
+![image-20240805152727317](https://image.kmoon.fun//images/202408051527380.png)
 
 - **parameters**
 
+|                             Name                             | Description                                                  |
+| :----------------------------------------------------------: | ------------------------------------------------------------ |
+|                            I(x,y)                            | M × N matrix with integer values between 0 and 255 (0 is black and 255 is white) I(x, y) denotes the “pixel” value at position (x, y) in the matrix. |
+|                              b                               | grid cell length, each grid cell contains b×b pixels         |
+| <img src="https://image.kmoon.fun//images/202408051459495.png" alt="image-20240805145911446" style="zoom:67%;" /> | privacy parameter, the degree of privacy，a smaller implies stronger privacy and vice versa |
+| <img src="https://image.kmoon.fun//images/202408051525824.png" alt="image-20240805152516778" style="zoom: 50%;" /> | global sensitivity, the maximum difference of f between any neighboring databases |
+
 ### Dataset
 
-- 
+- AT&T
+- MNIST
+- PETS: PETS09-S2L1
+- Venice: Venice-2
+
+Both datasets were converted to grayscale.
 
 ### Experiment
 
-- 
+<img src="https://image.kmoon.fun//images/202408051543922.png" alt="image-20240805154312864" style="zoom:67%;" />
+
+- Python
+- utility
+
+standard Mean Square Error (MSE)
+
+Structural Similarity (SSIM)
 
 ## Related
 
 ### Citations
+
+**blurring**: Gaussian blur, removes details from an image by convolving the 2D Gaussian distribution function with the image
+
+**P3 system**: encrypts the significant Discrete Cosine Transform (DCT) coefficients of the image
+
+HSV (hue-saturation-value)
+
+defer the extension of our study to inter-dependent images, such as a sequence of video frames
 
 ### Thinking
 
