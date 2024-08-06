@@ -4,6 +4,7 @@
 # @File : Random_Multidimensional_Transformation
 
 import numpy as np
+from PIL import Image
 from matplotlib import pyplot as plt
 import random
 from scipy.stats import ortho_group
@@ -280,19 +281,20 @@ class Random_Multidimensional_Transformation:
                 return img
 
 
+
 if __name__ == '__main__':
     mnist = MNIST()
     cifar10 = CIFAR10()
-    dataset = 'mnist'
-    for i in range(5):
-        image, label = mnist.dataset[i]
+    dataset = 'cifar10'
+    for i in range(1):
+        image, label = cifar10.dataset[i]
         method = Random_Multidimensional_Transformation(
             image=image,
-            block_size=4,
-            Shuffle=False,
+            block_size=2,
+            Shuffle=True,
         )
 
         transfer_image = method.apply()
-        transfer_image = np.clip(transfer_image.astype('uint8'), 0, 255).astype(np.uint8)
-        plt.imshow(transfer_image, cmap='gray')
-        plt.savefig(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label))
+        img = Image.fromarray(transfer_image.astype('uint8'))
+        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        # img.show()

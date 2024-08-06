@@ -4,7 +4,7 @@
 # @File : Additive_Multiplicative_Matrix_Transformation
 import random
 import numpy as np
-from matplotlib import pyplot as plt
+from PIL import Image
 
 from datasets.cifar10 import CIFAR10
 from datasets.mnist import MNIST
@@ -25,50 +25,50 @@ class Additive_Multiplicative_Matrix_Transform:
         self.R_mul = np.random.randint(1, self.MAX_V_MUL, size=self.image.shape)
 
     def MAT(self):
-        return (self.image + self.R_add) / (255 * (1 + self.MAX_V_ADD / 256))
+        return self.image + self.R_add
 
     def MMT(self):
         if len(self.image.shape) == 2:
-            return (self.image / 255) * self.R_mul / (self.MAX_V_MUL - 1)
+            return self.image * self.R_mul
 
-        r = (self.image[:, :, 0] / 255) * self.R_mul[:, :, 0] / (self.MAX_V_MUL - 1)
-        g = (self.image[:, :, 1] / 255) * self.R_mul[:, :, 1] / (self.MAX_V_MUL - 1)
-        b = (self.image[:, :, 2] / 255) * self.R_mul[:, :, 2] / (self.MAX_V_MUL - 1)
+        r = self.image[:, :, 0] * self.R_mul[:, :, 0]
+        g = self.image[:, :, 1] * self.R_mul[:, :, 1]
+        b = self.image[:, :, 2] * self.R_mul[:, :, 2]
 
         return np.dstack((r, g, b))
 
     def Rise_MMT(self):
         self.image = self.image + self.RISE_V
         if len(self.image.shape) == 2:
-            return self.image / (255 + self.RISE_V - 1) * (self.R_mul / (self.MAX_V_MUL - 1))
+            return self.image * self.R_mul
 
-        r = (self.image[:, :, 0]) / (255 + self.RISE_V - 1) * (self.R_mul[:, :, 0] / (self.MAX_V_MUL - 1))
-        g = (self.image[:, :, 1]) / (255 + self.RISE_V - 1) * (self.R_mul[:, :, 1] / (self.MAX_V_MUL - 1))
-        b = (self.image[:, :, 2]) / (255 + self.RISE_V - 1) * (self.R_mul[:, :, 2] / (self.MAX_V_MUL - 1))
+        r = self.image[:, :, 0] * self.R_mul[:, :, 0]
+        g = self.image[:, :, 1] * self.R_mul[:, :, 1]
+        b = self.image[:, :, 2] * self.R_mul[:, :, 2]
 
         return np.dstack((r, g, b))
 
     def MAT_MMT(self):
-        self.image = (self.image + self.R_add) / (255 * (1 + self.MAX_V_ADD / 256))
+        self.image = self.image + self.R_add
 
         if len(self.image.shape) == 2:
-            return self.image * self.R_mul / (self.MAX_V_MUL - 1)
+            return self.image * self.R_mul
 
-        r = (self.image[:, :, 0]) * self.R_mul[:, :, 0] / (self.MAX_V_MUL - 1)
-        g = (self.image[:, :, 1]) * self.R_mul[:, :, 1] / (self.MAX_V_MUL - 1)
-        b = (self.image[:, :, 2]) * self.R_mul[:, :, 2] / (self.MAX_V_MUL - 1)
+        r = (self.image[:, :, 0]) * self.R_mul[:, :, 0]
+        g = (self.image[:, :, 1]) * self.R_mul[:, :, 1]
+        b = (self.image[:, :, 2]) * self.R_mul[:, :, 2]
 
         return np.dstack((r, g, b))
 
     def MMT_MAT(self):
         if len(self.image.shape) == 2:
-            return (self.image * self.R_mul / (self.MAX_V_MUL - 1) + self.R_add) / (255 * (1 + self.MAX_V_ADD / 256))
+            return self.image * self.R_mul + self.R_add
 
-        r = (self.image[:, :, 0] / 255) * self.R_mul[:, :, 0] / (self.MAX_V_MUL - 1)
-        g = (self.image[:, :, 1] / 255) * self.R_mul[:, :, 1] / (self.MAX_V_MUL - 1)
-        b = (self.image[:, :, 2] / 255) * self.R_mul[:, :, 2] / (self.MAX_V_MUL - 1)
+        r = self.image[:, :, 0] * self.R_mul[:, :, 0]
+        g = self.image[:, :, 1] * self.R_mul[:, :, 1]
+        b = self.image[:, :, 2] * self.R_mul[:, :, 2]
 
-        return (np.dstack((r, g, b)) + self.R_add) / (255 * (1 + self.MAX_V_ADD / 256))
+        return np.dstack((r, g, b)) + self.R_add
 
     def apply(self):
         choice = random.choice([self.MAT, self.MMT, self.Rise_MMT, self.MAT_MMT, self.MMT_MAT])
@@ -78,8 +78,8 @@ class Additive_Multiplicative_Matrix_Transform:
 if __name__ == '__main__':
     mnist = MNIST()
     cifar10 = CIFAR10()
-    dataset = 'cifar10'
-    for i in range(10):
+    dataset = 'cifar10' # 数据集
+    for i in range(1):
         image, label = cifar10.dataset[i]
         method = Additive_Multiplicative_Matrix_Transform(
             image=image,
@@ -88,5 +88,6 @@ if __name__ == '__main__':
             max_v_mul=random.choice([10, 100, 1000, 10000]))
 
         transfer_image = method.apply()
-        plt.imshow(transfer_image, cmap='gray')
-        plt.savefig(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label))
+        img = Image.fromarray(transfer_image.astype('uint8'))
+        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        # img.show()

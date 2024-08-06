@@ -3,9 +3,8 @@
 # @Author : Kmoon_Hs
 # @File : Differentially_Private_Pixelization
 
-import random
 import numpy as np
-from matplotlib import pyplot as plt
+from PIL import Image
 from scipy.stats import laplace
 
 from datasets.cifar10 import CIFAR10
@@ -86,9 +85,9 @@ class Differentially_Private_Pixelization:
 if __name__ == '__main__':
     cifar10 = CIFAR10()
     mnist = MNIST()
-    dataset = 'cifar10'
+    dataset = 'mnist'
     for i in range(1):
-        image, label = cifar10.dataset[i]
+        image, label = mnist.dataset[i]
         image = image.astype('uint8')
         method = Differentially_Private_Pixelization(
             image=image,
@@ -96,6 +95,8 @@ if __name__ == '__main__':
             m=4,
             epsilon=0.5,
         )
+
         transfer_image = method.apply()
-        plt.imshow(transfer_image, cmap='gray')
-        plt.savefig(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label))
+        img = Image.fromarray(transfer_image.astype('uint8'))
+        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        # img.show()

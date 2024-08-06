@@ -4,6 +4,7 @@
 # @File : Block-Wise_AES_Encryption
 
 import numpy as np
+from PIL import Image
 from matplotlib import pyplot as plt
 from Crypto.Cipher import AES as aes
 import random, os, math
@@ -243,17 +244,17 @@ class Block_Wise_AES_Encryption:
 if __name__ == '__main__':
     mnist = MNIST()
     cifar10 = CIFAR10()
-    dataset = 'cifar10'
-    for i in range(5):
-        image, label = cifar10.dataset[i]
+    dataset = 'mnist'
+    for i in range(1):
+        image, label = mnist.dataset[i]
         method = Block_Wise_AES_Encryption(
             image=image,
             block_size=(4, 4),
             One_cipher=True,
-            Shuffle=True,
+            Shuffle=False,
             )
 
         transfer_image = method.apply()
-        transfer_image = transfer_image.astype('uint8')
-        plt.imshow(transfer_image, cmap='gray')
-        plt.savefig(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label))
+        img = Image.fromarray(transfer_image.astype('uint8'))
+        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        # img.show()

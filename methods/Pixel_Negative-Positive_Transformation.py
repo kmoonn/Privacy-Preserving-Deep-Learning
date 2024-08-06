@@ -5,7 +5,7 @@
 
 import random
 import numpy as np
-from matplotlib import pyplot as plt
+from PIL import Image
 
 from datasets.cifar10 import CIFAR10
 from datasets.mnist import MNIST
@@ -71,9 +71,9 @@ class Pixel_Negative_Positive_Transformation:
 if __name__ == '__main__':
     cifar10 = CIFAR10()
     mnist = MNIST()
-    dataset = 'mnist'
-    for i in range(10):
-        image, label = mnist.dataset[i]
+    dataset = 'cifar10'
+    for i in range(1):
+        image, label = cifar10.dataset[i]
         image = image.astype('uint8')
         method = Pixel_Negative_Positive_Transformation(
             image=image,
@@ -82,5 +82,6 @@ if __name__ == '__main__':
         )
 
         transfer_image = method.apply()
-        plt.imshow(transfer_image, cmap='gray')
-        plt.savefig(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label))
+        img = Image.fromarray(transfer_image.astype('uint8'))
+        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        # img.show()
