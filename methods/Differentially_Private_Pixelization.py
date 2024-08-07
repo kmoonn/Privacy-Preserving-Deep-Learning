@@ -86,7 +86,7 @@ if __name__ == '__main__':
     cifar10 = CIFAR10()
     mnist = MNIST()
     dataset = 'mnist'
-    for i in range(1):
+    for i in range(100):
         image, label = mnist.dataset[i]
         image = image.astype('uint8')
         method = Differentially_Private_Pixelization(
@@ -98,5 +98,5 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
-        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
         # img.show()

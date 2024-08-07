@@ -285,9 +285,9 @@ class Random_Multidimensional_Transformation:
 if __name__ == '__main__':
     mnist = MNIST()
     cifar10 = CIFAR10()
-    dataset = 'cifar10'
-    for i in range(1):
-        image, label = cifar10.dataset[i]
+    dataset = 'mnist'
+    for i in range(100):
+        image, label = mnist.dataset[i]
         method = Random_Multidimensional_Transformation(
             image=image,
             block_size=2,
@@ -296,5 +296,5 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
-        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
         # img.show()

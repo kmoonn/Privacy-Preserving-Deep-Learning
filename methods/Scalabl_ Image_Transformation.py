@@ -141,7 +141,7 @@ if __name__ == '__main__':
     mnist = MNIST()
     cifar10 = CIFAR10()
     dataset = 'mnist'
-    for i in range(1):
+    for i in range(100):
         image, label = mnist.dataset[i]
         image = image.astype(np.uint8)
         method = Scalab_Image_Transformation(
@@ -156,5 +156,5 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
-        img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        img.show()
+        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
+        # img.show()
