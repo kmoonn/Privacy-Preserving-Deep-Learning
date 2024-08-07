@@ -6,13 +6,14 @@
 import random
 import numpy as np
 from PIL import Image
+from matplotlib import pyplot as plt
 
 from datasets.cifar10 import CIFAR10
 from datasets.mnist import MNIST
 
 
 class Scalab_Image_Transformation:
-    def __init__(self, image, block_size, key1,key2, key3, key4, key5):
+    def __init__(self, image, block_size, key1, key2, key3, key4, key5):
 
         self.method_label = "SIT"
         if len(image.shape) == 3:
@@ -32,20 +33,20 @@ class Scalab_Image_Transformation:
         self.block_size = block_size
         self.block_num = int((self.width / block_size) * (self.height / block_size))
 
-    def ImagePartition(self):
+    def ImagePartition(self, array):
         blocks = []
         width = [i * self.block_size for i in range(int(self.width / self.block_size))]
         hight = [i * self.block_size for i in range(int(self.height / self.block_size))]
 
         for i in hight:
             for j in width:
-                blocks.append(self.image[i:i + self.block_size, j:j + self.block_size])
+                blocks.append(array[i:i + self.block_size, j:j + self.block_size])
 
         return blocks
 
-    def BlockRotation(self):
+    def BlockRotation(self, array):
         rotated_blocks = []
-        block_list = self.ImagePartition()
+        block_list = self.ImagePartition(array)
 
         for i in range(self.block_num):
             rotated_block = np.rot90(block_list[i], k=self.key1)
@@ -53,9 +54,9 @@ class Scalab_Image_Transformation:
 
         return rotated_blocks
 
-    def PixelAdjustment(self):
+    def PixelAdjustment(self, array):
         adjusted_blocks = []
-        block_list = self.BlockRotation()
+        block_list = self.BlockRotation(array)
         np.random.seed(self.key2)
 
         for i in range(self.block_num):
@@ -65,9 +66,9 @@ class Scalab_Image_Transformation:
 
         return adjusted_blocks
 
-    def BlockFlipping(self):
+    def BlockFlipping(self, array):
         flipped_blocks = []
-        block_list = self.PixelAdjustment()
+        block_list = self.PixelAdjustment(array)
 
         for i in range(self.block_num):
             flipped_block = []
@@ -98,11 +99,11 @@ class Scalab_Image_Transformation:
             color_shuffled_array = np.dstack((b, g, r))
         return color_shuffled_array
 
-    def BlockShuffling(self):
+    def BlockShuffling(self, array):
         Row = []
         Column = []
 
-        block_list = self.BlockFlipping()
+        block_list = self.BlockFlipping(array)
 
         random.Random(self.key5).shuffle(block_list)
 
@@ -116,10 +117,10 @@ class Scalab_Image_Transformation:
                 Row = []
         return np.vstack(Column)
 
-    def MergeRGB(self):
-        r = self.image[:, :, 0]
-        g = self.image[:, :, 1]
-        b = self.image[:, :, 2]
+    def MergeRGB(self, image_array):
+        r = image_array[:, :, 0]
+        g = image_array[:, :, 1]
+        b = image_array[:, :, 2]
 
         encrypted_r = self.BlockShuffling(r)
         encrypted_g = self.BlockShuffling(g)
@@ -131,28 +132,29 @@ class Scalab_Image_Transformation:
 
     def apply(self):
         if self.channels == 1:
-            return self.BlockShuffling()
+            return self.BlockShuffling(self.image)
         else:
-            return self.MergeRGB()
+            return self.MergeRGB(self.image)
 
 
 if __name__ == '__main__':
     mnist = MNIST()
     cifar10 = CIFAR10()
-    dataset = 'cifar10'
+    dataset = 'mnist'
     for i in range(1):
-        image, label = cifar10.dataset[i]
+        image, label = mnist.dataset[i]
+        image = image.astype(np.uint8)
         method = Scalab_Image_Transformation(
             image=image,
-            block_size=2,
-            key1='',
-            key2='',
+            block_size=4,
+            key1=random.choice([1, 2, 3, 4]),
+            key2=2024,
             key3=random.choice([0, 1, 2]),
             key4=random.choice([0, 1, 2, 3, 4, 5]),
-            key5='',
+            key5=2024,
         )
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
         img.save(r'transformed datasets/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        # img.show()
+        img.show()
