@@ -14,7 +14,7 @@ from datasets.mnist import MNIST
 class Pixel_Negative_Positive_Transformation:
     def __init__(self, image, Kc, Ks):
         self.method_label = "PNPT"
-        self.image = image
+        self.image = image.astype('uint8')
         if len(image.shape) == 3:
             self.width, self.height, self.channels = image.shape
             self.Kc = Kc

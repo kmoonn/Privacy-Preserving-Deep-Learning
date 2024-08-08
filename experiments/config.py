@@ -6,7 +6,7 @@
 
 # config.py
 
-dataset = 'MNIST'  # or 'CIFAR10'
+dataset = 'MNIST'  # or 'CIFAR10' or 'LFW'
 batch_size = 64
 epochs = 10
-learning_rate = 0.001
+learning_rate = 0.01

@@ -342,10 +342,8 @@ class AES:
 
         self.block_num = int((image_size[0] / block_size[0]) * (image_size[1] / block_size[1]))
 
-        print(image_size)
-        print(block_size)
-
-        print('block number = ' + str(self.block_num))
+        # print(image_size)
+        # print(block_size)
 
         block_bytes = block_size[0] * block_size[1]
 

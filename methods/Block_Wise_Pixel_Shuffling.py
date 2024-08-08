@@ -9,16 +9,18 @@ import torchvision.transforms as transforms
 from PIL import Image
 
 
-class Block_Wise_Pixel_Shuffing:
-    def __init__(self, config, image):
+class Block_Wise_Pixel_Shuffling:
+    def __init__(self, block_size, seed, image):
         self.method_label = "BWPS"
-        self.block_size = config.block_size
+        self.block_size = block_size
+        self.seed = seed
+        self.channels, self.width, self.height = image.shape[1:]
         assert (
-                config.height % self.block_size == 0 | config.width % self.block_size == 0
+                self.height % self.block_size == 0 | self.width % self.block_size == 0
         ), "Image not divisible by block_size"
-        self.blocks_axis0 = int(config.height / self.block_size)
-        self.blocks_axis1 = int(config.width / self.block_size)
-        self.key = self.generate_key(config.seed, binary=False)  # 排列密钥
+        self.blocks_axis0 = int(self.height / self.block_size)
+        self.blocks_axis1 = int(self.width / self.block_size)
+        self.key = self.generate_key(self.seed, binary=False)  # 排列密钥
         self.image = image
 
     def forward(self, X, decrypt=False):
@@ -44,7 +46,7 @@ class Block_Wise_Pixel_Shuffing:
             self.block_size,
             self.blocks_axis1,
             self.block_size,
-            config.channels,
+            self.channels,
         )
 
         X = X.permute(0, 1, 3, 2, 4, 5)
@@ -53,7 +55,7 @@ class Block_Wise_Pixel_Shuffing:
             -1,
             self.blocks_axis0,
             self.blocks_axis1,
-            self.block_size * self.block_size * config.channels,
+            self.block_size * self.block_size * self.channels,
         )
         return X
 
@@ -64,21 +66,21 @@ class Block_Wise_Pixel_Shuffing:
             self.blocks_axis1,
             self.block_size,
             self.block_size,
-            config.channels,
+            self.channels,
         )
         X = X.permute(0, 1, 3, 2, 4, 5)
         X = X.reshape(
             -1,
             self.blocks_axis0 * self.block_size,
             self.blocks_axis1 * self.block_size,
-            config.channels,
+            self.channels,
         )
         X = X.permute(0, 3, 1, 2)
         return X
 
     def generate_key(self, seed, binary=False):
         torch.manual_seed(seed)
-        key = torch.randperm(self.block_size * self.block_size * config.channels)
+        key = torch.randperm(self.block_size * self.block_size * self.channels)
         if binary:
             key = key > len(key) / 2
         return key
@@ -88,11 +90,11 @@ class Block_Wise_Pixel_Shuffing:
 
 
 # 定义配置类
-class Config:
-    def __init__(self, image, block_size=4, seed=2024):
-        self.block_size = block_size
-        self.channels, self.width, self.height = image.shape[1:]
-        self.seed = seed
+# class Config:
+#     def __init__(self, image, block_size=4, seed=2024):
+#         self.block_size = block_size
+#         self.channels, self.width, self.height = image.shape[1:]
+#         self.seed = seed
 
 
 if __name__ == '__main__':
@@ -101,19 +103,22 @@ if __name__ == '__main__':
     cifar10 = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
     mnist = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
     dataset = 'mnist'  # 数据集
-    for i in range(100):
+    for i in range(1):
         image, label = mnist[i]
+        print(type(image), image.shape)
         image = image.unsqueeze(0)  # 增加批次维度
-        config = Config(image)
-        method = Block_Wise_Pixel_Shuffing(
-            config=config,
-            image=image,
+        print(type(image), image.shape)
+        # config = Config(image)
+        method = Block_Wise_Pixel_Shuffling(
+            block_size=4,
+            seed=2024,
+            image=image
         )
 
         transfer_image = method.apply()
         transfer_image = np.array(transfer_image[0].permute(1, 2, 0)) * 255
         transfer_image = np.uint8(transfer_image)
-        transfer_image = transfer_image.reshape(28, 28) # MNIST
+        transfer_image = transfer_image.reshape(28, 28)  # MNIST
         img = Image.fromarray(transfer_image)
         img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
         # img.show()

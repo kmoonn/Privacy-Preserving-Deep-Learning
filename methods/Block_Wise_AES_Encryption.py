@@ -3,11 +3,13 @@
 # @Author : Kmoon_Hs
 # @File : Block-Wise_AES_Encryption
 
+import math
+import os
+import random
+
 import numpy as np
-from PIL import Image
-from matplotlib import pyplot as plt
 from Crypto.Cipher import AES as aes
-import random, os, math
+from PIL import Image
 
 from datasets.cifar10 import CIFAR10
 from datasets.mnist import MNIST
@@ -30,7 +32,6 @@ class Block_Wise_AES_Encryption:
         self.block_size = block_size
         # 块数量
         self.block_num = int((self.width / block_size[0]) * (self.height/ block_size[1]))
-        print('block number = ' + str(self.block_num))
 
         block_bytes = block_size[0] * block_size[1]  # 块的字节大小 16
         self.scale = [1, 1]  # 放大情况
@@ -251,7 +252,7 @@ if __name__ == '__main__':
             image=image,
             block_size=(4, 4),
             One_cipher=True,
-            Shuffle=True,
+            Shuffle=True
             )
 
         transfer_image = method.apply()

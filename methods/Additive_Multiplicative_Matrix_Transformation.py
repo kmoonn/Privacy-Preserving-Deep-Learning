@@ -10,7 +10,7 @@ from datasets.cifar10 import CIFAR10
 from datasets.mnist import MNIST
 
 
-class Additive_Multiplicative_Matrix_Transform:
+class Additive_Multiplicative_Matrix_Transformation:
     def __init__(self, image, rise_v=100, max_v_add=256, max_v_mul=10):
         self.method_label = "AMMT"
         if len(image.shape) == 3:
@@ -80,7 +80,7 @@ class test:
         self.image = image
 
     def test(self):
-        method = Additive_Multiplicative_Matrix_Transform(
+        method = Additive_Multiplicative_Matrix_Transformation(
             image=self.image,
             rise_v=random.choice([100, 200, 300, 400]),
             max_v_add=random.choice([256, 512, 1024, 2048]),
@@ -93,10 +93,11 @@ class test:
 if __name__ == '__main__':
     mnist = MNIST()
     cifar10 = CIFAR10()
-    dataset = 'mnist'  # 数据集
-    for i in range(100):
-        image, label = mnist.dataset[i]
-        method = Additive_Multiplicative_Matrix_Transform(
+    dataset = 'cifar10'  # 数据集
+    for i in range(1):
+        image, label = cifar10.dataset[i]
+        image = image.astype('uint8')
+        method = Additive_Multiplicative_Matrix_Transformation(
             image=image,
             rise_v=random.choice([100, 200, 300, 400]),
             max_v_add=random.choice([256, 512, 1024, 2048]),
@@ -105,4 +106,4 @@ if __name__ == '__main__':
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
         img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        # img.show()
+        img.show()

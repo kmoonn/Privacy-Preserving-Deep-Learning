@@ -1,18 +1,18 @@
 # _*_ coding : utf-8 _*_
 # @Time : 2024/8/6 下午8:07
 # @Author : Kmoon_Hs
-# @File : Scalabl_ Image_Transformation
+# @File : Scalable_Image_Transformation
 
 import random
+
 import numpy as np
 from PIL import Image
-from matplotlib import pyplot as plt
 
 from datasets.cifar10 import CIFAR10
 from datasets.mnist import MNIST
 
 
-class Scalab_Image_Transformation:
+class Scalable_Image_Transformation:
     def __init__(self, image, block_size, key1, key2, key3, key4, key5):
 
         self.method_label = "SIT"
@@ -23,7 +23,7 @@ class Scalab_Image_Transformation:
             self.channels = 1
 
         self.image_size = image.shape
-        self.image = image
+        self.image = image.astype('uint8')
         self.key1 = key1
         self.key2 = key2
         self.key3 = key3
@@ -144,14 +144,14 @@ if __name__ == '__main__':
     for i in range(100):
         image, label = mnist.dataset[i]
         image = image.astype(np.uint8)
-        method = Scalab_Image_Transformation(
+        method = Scalable_Image_Transformation(
             image=image,
             block_size=4,
             key1=random.choice([1, 2, 3, 4]),
             key2=2024,
             key3=random.choice([0, 1, 2]),
             key4=random.choice([0, 1, 2, 3, 4, 5]),
-            key5=2024,
+            key5=2024
         )
 
         transfer_image = method.apply()

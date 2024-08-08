@@ -93,7 +93,7 @@ if __name__ == '__main__':
             image=image,
             block_size=4,
             m=4,
-            epsilon=0.5,
+            epsilon=0.5
         )
 
         transfer_image = method.apply()

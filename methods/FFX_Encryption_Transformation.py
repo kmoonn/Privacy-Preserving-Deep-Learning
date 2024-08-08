@@ -15,13 +15,16 @@ from PIL import Image
 
 
 class FFX_Encryption_Transformation:
-    def __init__(self, config, image):
+    def __init__(self, block_size, seed, password, image):
         self.method_label = "FFXE"
-        self.key = self.generate_key(config.seed, binary=True)  # 二进制密钥
-        self.lookup, self.relookup = self.generate_lookup(config.password)  # 使用给定的密码生成加密和解密的查找表
-        self.block_size = config.block_size
-        self.blocks_axis0 = int(config.height / config.block_size)
-        self.blocks_axis1 = int(config.width / config.block_size)
+        self.block_size = block_size
+        self.channels, self.width, self.height = image.shape[1:]
+        self.seed = seed
+        self.password = password
+        self.key = self.generate_key(binary=True)  # 二进制密钥
+        self.lookup, self.relookup = self.generate_lookup(self.password)  # 使用给定的密码生成加密和解密的查找表
+        self.blocks_axis0 = int(self.height / self.block_size)
+        self.blocks_axis1 = int(self.width / self.block_size)
         self.image = image
 
     # 生成用于加密和解密的查找表。通过将整数范围的像素值进行加密和解密，创建查找表。
@@ -68,7 +71,7 @@ class FFX_Encryption_Transformation:
             self.block_size,
             self.blocks_axis1,
             self.block_size,
-            config.channels,
+            self.channels,
         )
 
         X = X.permute(0, 1, 3, 2, 4, 5)
@@ -77,7 +80,7 @@ class FFX_Encryption_Transformation:
             -1,
             self.blocks_axis0,
             self.blocks_axis1,
-            self.block_size * self.block_size * config.channels,
+            self.block_size * self.block_size * self.channels,
         )
         return X
 
@@ -88,36 +91,36 @@ class FFX_Encryption_Transformation:
             self.blocks_axis1,
             self.block_size,
             self.block_size,
-            config.channels,
+            self.channels,
         )
         X = X.permute(0, 1, 3, 2, 4, 5)
         X = X.reshape(
             -1,
             self.blocks_axis0 * self.block_size,
             self.blocks_axis1 * self.block_size,
-            config.channels,
+            self.channels,
         )
         X = X.permute(0, 3, 1, 2)
         return X
 
-    def generate_key(self, seed, binary=False):
-        torch.manual_seed(seed)
-        key = torch.randperm(config.block_size * config.block_size * config.channels)
+    def generate_key(self, binary=False):
+        torch.manual_seed(self.seed)
+        key = torch.randperm(self.block_size * self.block_size * self.channels)
         if binary:
             key = key > len(key) / 2
         return key
 
     def apply(self):
-        return self.forward(self.image)
+        return np.uint8((np.array(self.forward(self.image)[0].permute(1, 2, 0)) * 255)).reshape(self.width,self.height)
 
 
 # 定义配置类
-class Config:
-    def __init__(self, image, block_size=4, seed=2024, password="password"):
-        self.block_size = block_size
-        self.channels, self.width, self.height = image.shape[1:]
-        self.seed = seed
-        self.password = password
+# class Config:
+#     def __init__(self, image, block_size=4, seed=2024, password="password"):
+#         self.block_size = block_size
+#         self.channels, self.width, self.height = image.shape[1:]
+#         self.seed = seed
+#         self.password = password
 
 
 if __name__ == '__main__':
@@ -126,19 +129,17 @@ if __name__ == '__main__':
     mnist = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
     cifar10 = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
     dataset = 'mnist'  # 数据集
-    for i in range(100):
-        image, label = mnist[i]
+    for i in range(1):
+        image, label = cifar10[i]
         image = image.unsqueeze(0)  # 增加批次维度
-        config = Config(image)
+        # config = Config(image)
         method = FFX_Encryption_Transformation(
-            config=config,
+            block_size=4, seed=2024, password="password",
             image=image
         )
 
         transfer_image = method.apply()
-        transfer_image = np.array(transfer_image[0].permute(1, 2, 0)) * 255
-        transfer_image = np.uint8(transfer_image)
-        transfer_image = transfer_image.reshape(28, 28)  # MNIST
+        # transfer_image = transfer_image.reshape(28, 28)  # MNIST
         img = Image.fromarray(transfer_image)
         img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        # img.show()
+        img.show()

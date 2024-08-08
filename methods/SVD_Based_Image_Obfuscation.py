@@ -110,7 +110,7 @@ if __name__ == '__main__':
         method = SVD_Based_Image_Obfuscation(
             image=image,
             k=5,
-            epsilon=0.5,
+            epsilon=0.5
         )
 
         transfer_image = method.apply()
