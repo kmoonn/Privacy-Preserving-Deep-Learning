@@ -7,8 +7,7 @@ import numpy as np
 from PIL import Image
 from scipy.optimize import fsolve
 
-from datasets.cifar10 import CIFAR10
-from datasets.mnist import MNIST
+from paddle.vision.datasets import MNIST,Cifar10
 
 
 class SVD_Based_Image_Obfuscation:
@@ -101,15 +100,15 @@ class test:
 
 
 if __name__ == '__main__':
-    mnist = MNIST()
-    cifar10 = CIFAR10()
-    dataset = 'mnist'  # 数据集
-    for i in range(100):
-        image, label = mnist.dataset[i]
-        print(image)
+    # mnist = MNIST(mode='test', backend="cv2")
+    cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'cifar10'  # 数据集
+    for i in range(400):
+        image, label = cifar10[i]
+        # print(image)
         method = SVD_Based_Image_Obfuscation(
             image=image,
-            k=5,
+            k=4,
             epsilon=0.5
         )
 

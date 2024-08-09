@@ -100,14 +100,12 @@ class Block_Wise_Pixel_Shuffling:
 if __name__ == '__main__':
     # 加载CIFAR-10数据集
     transform = transforms.Compose([transforms.ToTensor()])
-    cifar10 = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
-    mnist = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-    dataset = 'mnist'  # 数据集
-    for i in range(1):
-        image, label = mnist[i]
-        print(type(image), image.shape)
+    cifar10 = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+    # mnist = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+    dataset = 'cifar10'  # 数据集
+    for i in range(400):
+        image, label = cifar10[i]
         image = image.unsqueeze(0)  # 增加批次维度
-        print(type(image), image.shape)
         # config = Config(image)
         method = Block_Wise_Pixel_Shuffling(
             block_size=4,
@@ -118,7 +116,7 @@ if __name__ == '__main__':
         transfer_image = method.apply()
         transfer_image = np.array(transfer_image[0].permute(1, 2, 0)) * 255
         transfer_image = np.uint8(transfer_image)
-        transfer_image = transfer_image.reshape(28, 28)  # MNIST
+        # transfer_image = transfer_image.reshape(28, 28)  # MNIST
         img = Image.fromarray(transfer_image)
         img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
         # img.show()

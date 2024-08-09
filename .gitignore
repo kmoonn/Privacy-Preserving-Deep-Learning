@@ -1,5 +1,7 @@
+#Backup
+*.ipynb
+backup
 # Dataset
-datasets
 # image
 data
 *.png

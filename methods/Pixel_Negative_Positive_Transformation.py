@@ -7,8 +7,7 @@ import random
 import numpy as np
 from PIL import Image
 
-from datasets.cifar10 import CIFAR10
-from datasets.mnist import MNIST
+from paddle.vision.datasets import MNIST, Cifar10
 
 
 class Pixel_Negative_Positive_Transformation:
@@ -23,6 +22,7 @@ class Pixel_Negative_Positive_Transformation:
             self.width, self.height = image.shape
             self.channels = 1
             self.Kc = Kc[0]
+
     def NP(self):
         if self.channels == 3:
             Kr, Kg, Kb = self.Kc
@@ -68,12 +68,13 @@ class Pixel_Negative_Positive_Transformation:
         else:
             return self.NP()
 
+
 if __name__ == '__main__':
-    cifar10 = CIFAR10()
-    mnist = MNIST()
-    dataset = 'mnist'
-    for i in range(100):
-        image, label = mnist.dataset[i]
+    # mnist = MNIST(mode='test', backend="cv2")
+    cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'cifar10'
+    for i in range(400):
+        image, label = cifar10[i]
         image = image.astype('uint8')
         method = Pixel_Negative_Positive_Transformation(
             image=image,

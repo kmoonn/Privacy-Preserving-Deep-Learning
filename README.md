@@ -1,8 +1,5 @@
 # Privacy-Preserving-Deep-learning
 
-
-[TOC]
-
 # Papers
 
 ## 1. DLMT: Outsourcing Deep Learning with Privacy Protection Based on Matrix Transformation

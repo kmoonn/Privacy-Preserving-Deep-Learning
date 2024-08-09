@@ -7,8 +7,7 @@ import numpy as np
 from PIL import Image
 from scipy.stats import laplace
 
-from datasets.cifar10 import CIFAR10
-from datasets.mnist import MNIST
+from paddle.vision.datasets import MNIST, Cifar10
 
 
 class Differentially_Private_Pixelization:
@@ -83,11 +82,11 @@ class Differentially_Private_Pixelization:
 
 
 if __name__ == '__main__':
-    cifar10 = CIFAR10()
-    mnist = MNIST()
-    dataset = 'mnist'
-    for i in range(100):
-        image, label = mnist.dataset[i]
+    # mnist = MNIST(mode='test', backend="cv2")
+    cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'cifar10'
+    for i in range(400):
+        image, label = cifar10[i]
         image = image.astype('uint8')
         method = Differentially_Private_Pixelization(
             image=image,

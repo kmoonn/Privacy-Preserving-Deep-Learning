@@ -6,8 +6,7 @@ import random
 import numpy as np
 from PIL import Image
 
-from datasets.cifar10 import CIFAR10
-from datasets.mnist import MNIST
+from paddle.vision.datasets import MNIST, Cifar10
 
 
 class Additive_Multiplicative_Matrix_Transformation:
@@ -91,11 +90,11 @@ class test:
 
 
 if __name__ == '__main__':
-    mnist = MNIST()
-    cifar10 = CIFAR10()
+    # mnist = MNIST(mode='test',backend="cv2" )
+    cifar10 = Cifar10(mode='test',backend="cv2")
     dataset = 'cifar10'  # 数据集
-    for i in range(1):
-        image, label = cifar10.dataset[i]
+    for i in range(400):
+        image, label = cifar10[i]
         image = image.astype('uint8')
         method = Additive_Multiplicative_Matrix_Transformation(
             image=image,
@@ -106,4 +105,4 @@ if __name__ == '__main__':
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
         img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        img.show()
+        # img.show()

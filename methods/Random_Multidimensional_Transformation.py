@@ -8,9 +8,9 @@ import random
 import numpy as np
 from PIL import Image
 from scipy.stats import ortho_group
+from paddle.vision.datasets import MNIST, Cifar10
 
-from datasets.cifar10 import CIFAR10
-from datasets.mnist import MNIST
+
 
 
 class Random_Multidimensional_Transformation:
@@ -283,11 +283,11 @@ class Random_Multidimensional_Transformation:
 
 
 if __name__ == '__main__':
-    mnist = MNIST()
-    cifar10 = CIFAR10()
-    dataset = 'mnist'
-    for i in range(100):
-        image, label = mnist.dataset[i]
+    # mnist = MNIST(mode='test', backend="cv2")
+    cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'cifar10'
+    for i in range(400):
+        image, label = cifar10[i]
         method = Random_Multidimensional_Transformation(
             image=image,
             block_size=2,

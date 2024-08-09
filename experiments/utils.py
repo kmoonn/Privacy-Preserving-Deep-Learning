@@ -4,15 +4,9 @@
 # @File : utils
 
 # utils.py
-import os
 
 import numpy as np
 from PIL import Image
-
-def save_image(image, path):
-    if not os.path.exists(os.path.dirname(path)):
-        os.makedirs(os.path.dirname(path))
-    image.save(path)
 
 # 将矩阵保存为图像
 def save_image_from_array(img_array, save_path):
@@ -39,6 +33,6 @@ def load_image_to_array(image_path):
         numpy.ndarray: The image data in numpy array format.
     """
     with Image.open(image_path) as img:
-        img_array = np.array(img, dtype=np.float32)
+        img_array = np.array(img.convert('RGB'), dtype=np.float32)
     return img_array
 
