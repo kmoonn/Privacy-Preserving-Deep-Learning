@@ -3,7 +3,7 @@
 backup
 # Dataset
 # image
-data
+datasets
 *.png
 # Byte-compiled / optimized / DLL files
 __pycache__/
