@@ -14,13 +14,11 @@ from PIL import Image
 from paddle.vision.datasets import MNIST, Cifar10
 
 
-
 class Block_Wise_AES_Encryption:
 
     def __init__(self, image, block_size=(4, 4), One_cipher=True, Shuffle=False):
 
         self.method_label = "BWAE"
-
         if len(image.shape) == 3:
             self.width, self.height, self.channels = image.shape
         else:
@@ -31,7 +29,7 @@ class Block_Wise_AES_Encryption:
 
         self.block_size = block_size
         # 块数量
-        self.block_num = int((self.width / block_size[0]) * (self.height/ block_size[1]))
+        self.block_num = int((self.width / block_size[0]) * (self.height / block_size[1]))
 
         block_bytes = block_size[0] * block_size[1]  # 块的字节大小 16
         self.scale = [1, 1]  # 放大情况
@@ -152,7 +150,7 @@ class Block_Wise_AES_Encryption:
 
                     for j in range(img.shape[1]):
                         img1[i * self.scale[0]:(i + 1) * self.scale[0], j * self.scale[1]:(j + 1) * self.scale[1], c] *= \
-                        img[i, j, c]
+                            img[i, j, c]
 
         else:
 
@@ -241,10 +239,9 @@ class Block_Wise_AES_Encryption:
         return img2
 
 
-
 if __name__ == '__main__':
     # mnist = MNIST(mode='test',backend="cv2" )
-    cifar10 = Cifar10(mode='test',backend="cv2" )
+    cifar10 = Cifar10(mode='test', backend="cv2")
     dataset = 'cifar10'
     for i in range(400):
         image, label = cifar10[i]
@@ -253,7 +250,7 @@ if __name__ == '__main__':
             block_size=(4, 4),
             One_cipher=True,
             Shuffle=True
-            )
+        )
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))

@@ -3,4 +3,4 @@
 # @Author : Kmoon_Hs
 # @File : __init__
 
-__all__ = ['resnet', 'vgg']
+__all__ = ['resnet', 'seresnet']

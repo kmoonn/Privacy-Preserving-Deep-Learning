@@ -8,6 +8,7 @@
 import numpy as np
 from PIL import Image
 
+
 # 将矩阵保存为图像
 def save_image_from_array(img_array, save_path):
     """
@@ -35,4 +36,3 @@ def load_image_to_array(image_path):
     with Image.open(image_path) as img:
         img_array = np.array(img.convert('RGB'), dtype=np.float32)
     return img_array
-

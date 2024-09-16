@@ -12,8 +12,6 @@ from paddle.vision import Compose, Normalize, Transpose
 from experiments.utils import load_image_to_array
 
 
-# Compose([Normalize(mean=[127.5],std=[127.5],data_format='CHW')])
-
 class CIFAR10(paddle.io.Dataset):
     def __init__(self, image_dir=None, transform=Compose([Normalize(mean=[127.5], std=[127.5])])):
         super(CIFAR10, self).__init__()
@@ -41,15 +39,16 @@ class CIFAR10(paddle.io.Dataset):
         filename = os.path.basename(image_path)
         label = filename.split('_')[2]  # 提取标签部分
         label_mapping = {
-            'AMMT': 0,
-            'BWAE': 1,
-            'BWPS': 2,
-            'DPP': 3,
-            'FFXE': 4,
-            'PNPT': 5,
-            'RMT': 6,
-            'SIT': 7,
-            'SVDO': 8,
+            'RAW': 0,
+            'AMMT': 1,
+            'BWAE': 2,
+            'BWPS': 3,
+            'DPP': 4,
+            'FFXE': 5,
+            'PNPT': 6,
+            'RMT': 7,
+            'SIT': 8,
+            'SVDO': 9,
         }  # 定义标签映射
         return label_mapping.get(label, -1)
 
@@ -60,4 +59,10 @@ def get_loader(image_dir, batch_size=64, shuffle=True):
 
 
 if __name__ == '__main__':
-    pass
+    train = CIFAR10(image_dir='../experiments/transfer/cifar10/train')
+    test = CIFAR10(image_dir='../experiments/transfer/cifar10/test')
+    print(f'Train size: {len(train)}')
+    print(f'Test size: {len(test)}')
+    img, label = train[0]
+    print(f'Image shape: {img.shape}')
+    print(f'Label: {label}')
