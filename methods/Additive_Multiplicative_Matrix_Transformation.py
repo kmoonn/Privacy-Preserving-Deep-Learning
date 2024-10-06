@@ -93,16 +93,16 @@ if __name__ == '__main__':
     mnist = MNIST(mode='test',backend="cv2" )
     # cifar10 = Cifar10(mode='test',backend="cv2")
     dataset = 'mnist'  # 数据集
-    for i in range(400):
+    for i in range(3000):
         image, label = mnist[i]
         image = image.astype('uint8')
-        # method = Additive_Multiplicative_Matrix_Transformation(
-        #     image=image,
-        #     rise_v=random.choice([100, 200, 300, 400]),
-        #     max_v_add=random.choice([256, 512, 1024, 2048]),
-        #     max_v_mul=random.choice([10, 100, 1000, 10000]))
+        method = Additive_Multiplicative_Matrix_Transformation(
+            image=image,
+            rise_v=random.choice([100, 200, 300, 400]),
+            max_v_add=random.choice([256, 512, 1024, 2048]),
+            max_v_mul=random.choice([10, 100, 1000, 10000]))
 
-        # transfer_image = method.apply()
-        img = Image.fromarray(image.astype('uint8'))
-        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, 'RAW', label), 'JPEG')
+        transfer_image = method.apply()
+        img = Image.fromarray(transfer_image.astype('uint8'))
+        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, 'AMMT', label), 'JPEG')
         # img.show()

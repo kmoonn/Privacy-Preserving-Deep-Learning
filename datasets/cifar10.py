@@ -59,8 +59,8 @@ def get_loader(image_dir, batch_size=64, shuffle=True):
 
 
 if __name__ == '__main__':
-    train = CIFAR10(image_dir='../experiments/transfer/cifar10/train')
-    test = CIFAR10(image_dir='../experiments/transfer/cifar10/test')
+    train = CIFAR10(image_dir='../experiments/transformed/cifar10/train')
+    test = CIFAR10(image_dir='../experiments/transformed/cifar10/test')
     print(f'Train size: {len(train)}')
     print(f'Test size: {len(test)}')
     img, label = train[0]

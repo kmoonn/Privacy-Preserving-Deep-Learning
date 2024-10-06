@@ -110,7 +110,7 @@ class FFX_Encryption_Transformation:
         return key
 
     def apply(self):
-        return np.uint8((np.array(self.forward(self.image)[0].permute(1, 2, 0)) * 255)).reshape(3, self.width,
+        return np.uint8((np.array(self.forward(self.image)[0].permute(1, 2, 0)) * 255)).reshape(1, self.width,
                                                                                                 self.height)
 
 
@@ -126,11 +126,11 @@ class FFX_Encryption_Transformation:
 if __name__ == '__main__':
     # 加载数据集
     transform = transforms.Compose([transforms.ToTensor()])
-    # mnist = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
-    cifar10 = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
-    dataset = 'cifar10'  # 数据集
-    for i in range(400):
-        image, label = cifar10[i]
+    mnist = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+    # cifar10 = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+    dataset = 'mnist'  # 数据集
+    for i in range(3000):
+        image, label = mnist[i]
         image = image.unsqueeze(0)  # 增加批次维度
         # config = Config(image)
         method = FFX_Encryption_Transformation(
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         )
 
         transfer_image = method.apply()
-        # transfer_image = transfer_image.reshape(28, 28)  # MNIST
-        img = Image.fromarray(transfer_image.transpose(1, 2, 0))
+        transfer_image = transfer_image.reshape(28, 28)  # MNIST
+        img = Image.fromarray(transfer_image.astype('uint8'))
         img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
         # img.show()

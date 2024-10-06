@@ -138,11 +138,11 @@ class Scalable_Image_Transformation:
 
 
 if __name__ == '__main__':
-    # mnist = MNIST(mode='test', backend="cv2")
-    cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'cifar10'
-    for i in range(400):
-        image, label = cifar10[i]
+    mnist = MNIST(mode='test', backend="cv2")
+    # cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'mnist'
+    for i in range(3000):
+        image, label = mnist[i]
         image = image.astype(np.uint8)
         method = Scalable_Image_Transformation(
             image=image,

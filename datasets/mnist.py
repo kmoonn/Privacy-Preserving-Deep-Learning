@@ -59,8 +59,8 @@ def get_loader(image_dir, batch_size=64, shuffle=True):
 
 
 if __name__ == '__main__':
-    train = MNIST(image_dir='../experiments/transfer/mnist/train')
-    test = MNIST(image_dir='../experiments/transfer/mnist/test')
+    train = MNIST(image_dir='../experiments/transformed/mnist/train')
+    test = MNIST(image_dir='../experiments/transformed/mnist/test')
     print(f'Train size: {len(train)}')
     print(f'Test size: {len(test)}')
     img, label = train[0]

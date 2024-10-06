@@ -100,11 +100,11 @@ class test:
 
 
 if __name__ == '__main__':
-    # mnist = MNIST(mode='test', backend="cv2")
-    cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'cifar10'  # 数据集
-    for i in range(400):
-        image, label = cifar10[i]
+    mnist = MNIST(mode='test', backend="cv2")
+    # cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'mnist'  # 数据集
+    for i in range(3000):
+        image, label = mnist[i]
         # print(image)
         method = SVD_Based_Image_Obfuscation(
             image=image,
