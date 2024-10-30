@@ -82,11 +82,11 @@ class Differentially_Private_Pixelization:
 
 
 if __name__ == '__main__':
-    mnist = MNIST(mode='test', backend="cv2")
-    # cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'mnist'
+    # mnist = MNIST(mode='test', backend="cv2")
+    cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'cifar10'
     for i in range(3000):
-        image, label = mnist[i]
+        image, label = cifar10[i]
         image = image.astype('uint8')
         method = Differentially_Private_Pixelization(
             image=image,

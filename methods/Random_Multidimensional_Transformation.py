@@ -283,11 +283,11 @@ class Random_Multidimensional_Transformation:
 
 
 if __name__ == '__main__':
-    mnist = MNIST(mode='test', backend="cv2")
-    # cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'mnist'
+    # mnist = MNIST(mode='test', backend="cv2")
+    cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'cifar10'
     for i in range(3000):
-        image, label = mnist[i]
+        image, label = cifar10[i]
         method = Random_Multidimensional_Transformation(
             image=image,
             block_size=2,

@@ -240,11 +240,11 @@ class Block_Wise_AES_Encryption:
 
 
 if __name__ == '__main__':
-    mnist = MNIST(mode='test',backend="cv2" )
-    # cifar10 = Cifar10(mode='train', backend="cv2")
-    dataset = 'mnist'
+    # mnist = MNIST(mode='test',backend="cv2" )
+    cifar10 = Cifar10(mode='test', backend="cv2")
+    dataset = 'cifar10'
     for i in range(3000):
-        image, label = mnist[i]
+        image, label = cifar10[i]
         method = Block_Wise_AES_Encryption(
             image=image,
             block_size=(4, 4),
