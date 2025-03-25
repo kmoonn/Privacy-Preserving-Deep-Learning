@@ -1,8 +1,3 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/5 下午4:35
-# @Author : Kmoon_Hs
-# @File : Differentially_Private_Pixelization
-
 import numpy as np
 from PIL import Image
 from scipy.stats import laplace
@@ -82,11 +77,18 @@ class Differentially_Private_Pixelization:
 
 
 if __name__ == '__main__':
-    # mnist = MNIST(mode='test', backend="cv2")
-    cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'cifar10'
-    for i in range(3000):
-        image, label = cifar10[i]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--m', type=str, default='train')
+    parser.add_argument('--d', type=str, default='mnist')
+    args = parser.parse_args()
+
+    if args.d == 'mnist':
+        dataset = MNIST(mode=args.m, backend="cv2")
+    else:
+        dataset = Cifar10(mode=args.m, backend="cv2")
+
+    for i in range(len(dataset)):
+        image, label = dataset[i]
         image = image.astype('uint8')
         method = Differentially_Private_Pixelization(
             image=image,
@@ -97,5 +99,4 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
-        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        # img.show()
+        img.save(r'../data/{}/{}/{}_{}_{}_{}.png'.format(args.m, args.d, args.d, i, 'DPP', label), 'JPEG')

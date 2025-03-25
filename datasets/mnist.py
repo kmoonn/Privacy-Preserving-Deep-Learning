@@ -1,9 +1,3 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/2 下午4:01
-# @Author : Kmoon_Hs
-# @File : mnist
-
-
 import os
 
 import paddle
@@ -39,7 +33,7 @@ class MNIST(paddle.io.Dataset):
         filename = os.path.basename(image_path)
         label = filename.split('_')[2]  # 提取标签部分
         label_mapping = {
-            'RAW':0,
+            'RAW': 0,
             'AMMT': 1,
             'BWAE': 2,
             'BWPS': 3,
@@ -54,7 +48,7 @@ class MNIST(paddle.io.Dataset):
 
 
 def get_loader(image_dir, batch_size=64, shuffle=True):
-    dataset = MNIST(image_dir = image_dir)
+    dataset = MNIST(image_dir=image_dir)
     return paddle.io.DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 
 
@@ -66,4 +60,3 @@ if __name__ == '__main__':
     img, label = train[0]
     print(f'Image shape: {img.shape}')
     print(f'Label: {label}')
-

@@ -1,12 +1,4 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/2 下午3:54
-# @Author : Kmoon_Hs
-# @File : config
-
-
-# config.py
-
-dataset = 'mnist'
+dataset = 'cifar10'
 
 train_image_dir = f'../transformed/{dataset}/train'  # 训练集路径
 test_image_dir = f'../transformed/{dataset}/test'  # 测试集路径

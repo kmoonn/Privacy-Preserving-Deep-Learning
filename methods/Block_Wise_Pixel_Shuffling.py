@@ -1,7 +1,3 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/7 下午12:07
-# @Author : Kmoon_Hs
-# @File : Block-Wise_Pixel_Shuffling
 import numpy as np
 import torch
 import torchvision.datasets as datasets

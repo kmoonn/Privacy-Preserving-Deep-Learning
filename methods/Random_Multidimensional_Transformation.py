@@ -1,16 +1,9 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/6 下午4:39
-# @Author : Kmoon_Hs
-# @File : Random_Multidimensional_Transformation
-
 import random
-
+import argparse
 import numpy as np
 from PIL import Image
 from scipy.stats import ortho_group
 from paddle.vision.datasets import MNIST, Cifar10
-
-
 
 
 class Random_Multidimensional_Transformation:
@@ -281,13 +274,20 @@ class Random_Multidimensional_Transformation:
                 return img
 
 
-
 if __name__ == '__main__':
-    # mnist = MNIST(mode='test', backend="cv2")
-    cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'cifar10'
-    for i in range(3000):
-        image, label = cifar10[i]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--m', type=str, default='train')
+    parser.add_argument('--d', type=str, default='mnist')
+    args = parser.parse_args()
+
+    if args.d == 'mnist':
+        dataset = MNIST(mode=args.m, backend="cv2")
+    else:
+        dataset = Cifar10(mode=args.m, backend="cv2")
+
+    for i in range(len(dataset)):
+        image, label = dataset[i]
+        image = image.astype('uint8')
         method = Random_Multidimensional_Transformation(
             image=image,
             block_size=2,
@@ -296,5 +296,4 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
-        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        # img.show()
+        img.save(r'../data/{}/{}/{}_{}_{}_{}.png'.format(args.m, args.d, args.d, i, method.method_label, label), 'JPEG')

@@ -1,8 +1,4 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/7 下午12:09
-# @Author : Kmoon_Hs
-# @File : FFX_Encryption_Transformation
-
+import argparse
 
 import numpy as np
 import torch
@@ -110,36 +106,34 @@ class FFX_Encryption_Transformation:
         return key
 
     def apply(self):
-        return np.uint8((np.array(self.forward(self.image)[0].permute(1, 2, 0)) * 255)).reshape(3, self.width, self.height)
-
-
-# 定义配置类
-# class Config:
-#     def __init__(self, image, block_size=4, seed=2024, password="password"):
-#         self.block_size = block_size
-#         self.channels, self.width, self.height = image.shape[1:]
-#         self.seed = seed
-#         self.password = password
+        return np.uint8((np.array(self.forward(self.image)[0].permute(1, 2, 0)) * 255)).reshape(1, self.width,
+                                                                                                self.height)
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--m', type=str, default='train')
+    parser.add_argument('--d', type=str, default='mnist')
+    args = parser.parse_args()
+
     # 加载数据集
     transform = transforms.Compose([transforms.ToTensor()])
-    # mnist = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+    mnist = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
     cifar10 = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
-    dataset = 'cifar10'  # 数据集
-    for i in range(3000):
-        image, label = cifar10[i]
+
+    if args.d == 'mnist':
+        dataset = 'mnist'  # 数据集
+    else:
+        dataset = 'cifar10'
+    for i in range(60000):
+        image, label = mnist[i]
         image = image.unsqueeze(0)  # 增加批次维度
-        # config = Config(image)
         method = FFX_Encryption_Transformation(
-            block_size=4, seed=2024, password="password",
+            block_size=4, seed=2025, password="password",
             image=image
         )
 
         transfer_image = method.apply()
-        # print(transfer_image.shape)
-        # transfer_image = transfer_image.reshape(28, 28)  # MNIST
-        img = Image.fromarray(transfer_image.transpose(1, 2, 0).astype('uint8'))
-        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        # img.show()
+        transfer_image = np.squeeze(transfer_image, axis=0)  # (28, 28) 去掉通道维度
+        img = Image.fromarray(transfer_image)
+        img.save(r'./data/{}/{}/{}_{}_{}_{}.png'.format(args.m, args.d, args.d, i, method.method_label, label), 'JPEG')

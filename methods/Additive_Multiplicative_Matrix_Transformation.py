@@ -1,10 +1,7 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/2 下午3:57
-# @Author : Kmoon_Hs
-# @File : Additive_Multiplicative_Matrix_Transformation
 import random
 import numpy as np
 from PIL import Image
+import argparse
 
 from paddle.vision.datasets import MNIST, Cifar10
 
@@ -74,27 +71,19 @@ class Additive_Multiplicative_Matrix_Transformation:
         return choice()
 
 
-class test:
-    def __init__(self, image):
-        self.image = image
-
-    def test(self):
-        method = Additive_Multiplicative_Matrix_Transformation(
-            image=self.image,
-            rise_v=random.choice([100, 200, 300, 400]),
-            max_v_add=random.choice([256, 512, 1024, 2048]),
-            max_v_mul=random.choice([10, 100, 1000, 10000]))
-
-        transfer_image = method.apply()
-        return transfer_image
-
-
 if __name__ == '__main__':
-    # mnist = MNIST(mode='test',backend="cv2" )
-    cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'cifar10'  # 数据集
-    for i in range(3000):
-        image, label = cifar10[i]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--m', type=str, default='train')
+    parser.add_argument('--d', type=str, default='mnist')
+    args = parser.parse_args()
+
+    if args.d == 'mnist':
+        dataset = MNIST(mode=args.m, backend="cv2")
+    else:
+        dataset = Cifar10(mode=args.m, backend="cv2")
+
+    for i in range(len(dataset)):
+        image, label = dataset[i]
         image = image.astype('uint8')
         method = Additive_Multiplicative_Matrix_Transformation(
             image=image,
@@ -104,5 +93,4 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
-        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, 'AMMT', label), 'JPEG')
-        # img.show()
+        img.save(r'../data/{}/{}/{}_{}_{}_{}.png'.format(args.m, args.d, args.d, i, method.method_label, label), 'JPEG')

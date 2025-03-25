@@ -1,28 +1,31 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/2 下午3:53
-# @Author : Kmoon_Hs
-# @File : main
 import time
 import warnings
 
-warnings.filterwarnings("ignore", category=Warning)  # 过滤报警信息
-
+import matplotlib.pyplot as plt
+import numpy as np
 import paddle
-from paddle.metric import Accuracy
 from paddle.nn import CrossEntropyLoss
-from paddle.optimizer import Adam
+
+# 自定义损失函数
+from loss import CustomLoss
+
+from paddle.optimizer import SGD
 
 import config
+
 # 数据集
-from datasets.mnist import get_loader
-# from datasets.cifar10 import get_loader
+# from datasets.mnist import get_loader
+from datasets.cifar10 import get_loader
+
 # 模型
 from models.resnet import ResNet34
 from models.seresnet import SEResNet34
 
 
+warnings.filterwarnings("ignore", category=Warning)  # 过滤报警信息
+
+
 def train():
-    # 数据加载
     train_loader = get_loader(image_dir=config.train_image_dir, batch_size=config.batch_size)
 
     # 初始化模型
@@ -33,43 +36,61 @@ def train():
     else:
         raise ValueError(f"Unsupported model name: {config.model_name}")
 
-    # 定义损失函数和优化器
+    # 损失函数设置
     criterion = CrossEntropyLoss()
-    optimizer = Adam(parameters=model.parameters(), learning_rate=config.learning_rate)
+    # 优化器
+    optimizer = SGD(parameters=model.parameters(), learning_rate=config.learning_rate)
 
-    # 训练模型
     print('start training ... ')
     start = time.time()
     model.train()
-    loss_list = []
+
+    train_loss_list = []
+    train_acc_list = []
+
+    # 训练轮数
     for epoch in range(config.epochs):
+        epoch_loss = []
+        correct_predictions = 0     # 正确预测
+        total_samples = 0   # 样本总数
+
+        # 训练批次
         for batch_id, (images, labels) in enumerate(train_loader()):
-            # 前向传播
             outputs = model(images)
             loss = criterion(outputs, labels)
-
-            if batch_id % 100 == 0:
-                loss_list.append(loss.numpy())
-                print(f"Epoch [{epoch + 1}/{config.epochs}], Batch [{batch_id}], Loss: {loss.numpy()}")
-
-            # 反向传播和优化
             loss.backward()
             optimizer.step()
             optimizer.clear_grad()
 
-    # 保存模型参数
+            # 计算 loss
+            epoch_loss.append(loss.numpy().item())
+
+            # 计算训练集上的 accuracy
+            preds = paddle.argmax(outputs, axis=1)
+            correct_predictions += (preds == labels).astype("float32").sum().numpy()
+            total_samples += labels.shape[0]
+
+            print(correct_predictions, total_samples)
+
+        # 计算 loss 和 acc
+        avg_loss = np.mean(epoch_loss)
+        avg_acc = correct_predictions / total_samples
+
+        train_loss_list.append(avg_loss)
+        train_acc_list.append(avg_acc)
+
+        print(f"Epoch [{epoch + 1}/{config.epochs}], Loss: {avg_loss:.4f}, Accuracy: {avg_acc:.4f}")
+
     paddle.save(model.state_dict(), config.save_path)
     print(f"Model saved to {config.save_path}")
-    end = time.time()
-    print(f"Training time: {end - start}")
-    return loss_list
+    print(f"Training time: {time.time() - start:.2f}s")
+
+    return train_loss_list, train_acc_list
 
 
 def eval():
-    # 加载测试集数据
     test_loader = get_loader(image_dir=config.test_image_dir, batch_size=config.batch_size, shuffle=True)
 
-    # 初始化模型
     if config.model_name == 'resnet34':
         model = ResNet34(num_classes=config.num_classes)
     elif config.model_name == 'seresnet34':
@@ -77,38 +98,84 @@ def eval():
     else:
         raise ValueError(f"Unsupported model name: {config.model_name}")
 
-    # 加载模型参数
     model.set_state_dict(paddle.load(config.save_path))
 
     print('start evaling ... ')
     start = time.time()
+    model.eval()
 
-    model.eval()  # 设置模型为评估模式
-    accuracy = Accuracy()
+    test_loss_list = []
+    test_acc_list = []
 
-    with paddle.no_grad():  # 评估过程中不需要梯度
-        for batch_id, (images, labels) in enumerate(test_loader()):
-            outputs = model(images)
-            correct = accuracy.compute(outputs, labels)
-            accuracy.update(correct)
-            preds = paddle.argmax(outputs, axis=1)  # 取每个样本的最大概率对应的类别
+    criterion = CrossEntropyLoss()
 
-            for i in range(len(labels)):
-                label = labels[i].item()
-                pred = preds[i].item()
-                if i % 100 == 0:
-                    print(
-                        f"Sample {batch_id * len(labels) + i + 1}: Predicted = {pred}, Actual = {label}, {'Correct' if pred == label else 'Incorrect'}")
+    with paddle.no_grad():
+        for epoch in range(config.epochs):
+            epoch_loss = []
+            correct_predictions = 0
+            total_samples = 0
 
-    acc = accuracy.accumulate()  # 计算准确率
-    print(f"Overall Test Accuracy: {acc}")
-    end = time.time()
-    print(f"Test time: {end - start}")
+            for batch_id, (images, labels) in enumerate(test_loader()):
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+
+                # 计算 loss
+                epoch_loss.append(loss.numpy().item())
+
+                # 计算测试集上的 accuracy
+                preds = paddle.argmax(outputs, axis=1)
+                correct_predictions += (preds == labels).astype("float32").sum().numpy()
+                total_samples += labels.shape[0]
+
+            # 计算 loss 和 acc
+            avg_loss = np.mean(epoch_loss)
+            avg_acc = correct_predictions / total_samples
+
+            test_loss_list.append(avg_loss)
+            test_acc_list.append(avg_acc)
+
+            print(f"Epoch [{epoch + 1}/{config.epochs}], Test Loss: {avg_loss:.4f}, Test Accuracy: {avg_acc:.4f}")
+
+    print(f"Test time: {time.time() - start:.2f}s")
+
+    return test_loss_list, test_acc_list
+
+
+def show(train_loss, train_acc, test_loss, test_acc):
+    # 绘制 Loss 和 Accuracy 曲线
+    epochs = np.arange(config.epochs)
+
+    fig, ax1 = plt.subplots(figsize=(8, 5))
+
+    # 绘制 Loss 曲线
+    ax1.plot(epochs, train_loss, 'r-', label="Train Loss")
+    ax1.plot(epochs, test_loss, 'r--', label="Test Loss")
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("Loss", color='r')
+    ax1.tick_params(axis='y', labelcolor='r')
+
+    # 绘制 Accuracy 曲线
+    ax2 = ax1.twinx()
+    ax2.plot(epochs, train_acc, 'b-', label="Train Accuracy")
+    ax2.plot(epochs, test_acc, 'b--', label="Test Accuracy")
+    ax2.set_ylabel("Accuracy", color='b')
+    ax2.tick_params(axis='y', labelcolor='b')
+
+    # 添加图例
+    ax1.legend(loc="upper right")
+    ax2.legend(loc="lower right")
+
+    plt.title("Loss & Accuracy over Epochs")
+    plt.show()
 
 
 if __name__ == "__main__":
-    # 模型训练
-    loss_list = train()
+    # 训练
+    train_loss, train_acc = train()
 
-    # 模型测试
-    eval()
+    # # 测试
+    # test_loss, test_acc = eval()
+    #
+    # # 结果图
+    # show(train_loss, train_acc, test_loss, test_acc)
+

@@ -1,10 +1,3 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/2 下午3:54
-# @Author : Kmoon_Hs
-# @File : utils
-
-# utils.py
-
 import numpy as np
 from PIL import Image
 

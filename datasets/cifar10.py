@@ -1,9 +1,3 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/2 下午4:01
-# @Author : Kmoon_Hs
-# @File : cifat10
-
-
 import os
 
 import paddle

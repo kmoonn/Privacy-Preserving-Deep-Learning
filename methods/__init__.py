@@ -1,9 +1,3 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/2 下午4:08
-# @Author : Kmoon_Hs
-# @File : __init__
-
-
 __all__ = ['Additive_Multiplicative_Matrix_Transformation',
            'Block_Wise_AES_Encryption',
            'Block_Wise_Pixel_Shuffling',

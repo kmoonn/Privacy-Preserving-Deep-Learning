@@ -1,10 +1,5 @@
-# _*_ coding : utf-8 _*_
-# @Time : 2024/8/6 下午8:07
-# @Author : Kmoon_Hs
-# @File : Scalable_Image_Transformation
-
 import random
-
+import argparse
 import numpy as np
 from PIL import Image
 
@@ -138,12 +133,19 @@ class Scalable_Image_Transformation:
 
 
 if __name__ == '__main__':
-    # mnist = MNIST(mode='test', backend="cv2")
-    cifar10 = Cifar10(mode='test', backend="cv2")
-    dataset = 'cifar10'
-    for i in range(3000):
-        image, label = cifar10[i]
-        image = image.astype(np.uint8)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--m', type=str, default='train')
+    parser.add_argument('--d', type=str, default='mnist')
+    args = parser.parse_args()
+
+    if args.d == 'mnist':
+        dataset = MNIST(mode=args.m, backend="cv2")
+    else:
+        dataset = Cifar10(mode=args.m, backend="cv2")
+
+    for i in range(len(dataset)):
+        image, label = dataset[i]
+        image = image.astype('uint8')
         method = Scalable_Image_Transformation(
             image=image,
             block_size=4,
@@ -156,5 +158,4 @@ if __name__ == '__main__':
 
         transfer_image = method.apply()
         img = Image.fromarray(transfer_image.astype('uint8'))
-        img.save(r'data/transfer/{}_{}_{}_{}.png'.format(dataset, i, method.method_label, label), 'JPEG')
-        # img.show()
+        img.save(r'../data/{}/{}/{}_{}_{}_{}.png'.format(args.m, args.d, args.d, i, method.method_label, label), 'JPEG')
